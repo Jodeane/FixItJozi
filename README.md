@@ -10,6 +10,7 @@ User authentication (login/register)
 Location-based reporting
 
 Tech Stack
+
 Python (Django)
 
 HTML, CSS
