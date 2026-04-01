@@ -1,0 +1,401 @@
+{% extends 'core/base.html' %} {% block content %}
+
+<div class="home-wrap">
+  <!-- ── HERO ─────────────────────────────────────── -->
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-brand">
+        <div class="brand-orb" id="brandOrb">
+          <span class="material-icons-round">build_circle</span>
+        </div>
+        <div>
+          <h1 class="hero-title">FixIt<span class="accent">Jozi</span></h1>
+          <p class="hero-tagline">Community-powered city repair</p>
+        </div>
+      </div>
+
+      <p class="hero-desc">
+        Spot a broken road, power outage, or burst pipe?<br />
+        Report it in seconds and watch your community fix it.
+      </p>
+
+      <!-- ── THREE ACTION BUTTONS ── -->
+      <div class="action-cards">
+        <a href="/report/" class="action-card primary">
+          <div class="action-icon-wrap">
+            <span class="material-icons-round">report_problem</span>
+          </div>
+          <div class="action-text">
+            <span class="action-title">Report Issue</span>
+          </div>
+          <span class="material-icons-round action-arrow">arrow_forward</span>
+        </a>
+
+        <a href="/track/" class="action-card secondary">
+          <div class="action-icon-wrap">
+            <span class="material-icons-round">location_on</span>
+          </div>
+          <div class="action-text">
+            <span class="action-title">Track Issue</span>
+          </div>
+          <span class="material-icons-round action-arrow">arrow_forward</span>
+        </a>
+
+        <a href="/community/" class="action-card community">
+          <div class="action-icon-wrap">
+            <span class="material-icons-round">groups</span>
+          </div>
+          <div class="action-text">
+            <span class="action-title">Community Feed</span>
+          </div>
+          <span class="material-icons-round action-arrow">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .home-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px) 120px;
+  }
+
+  /* ── HERO ── */
+  .hero-section {
+    padding: clamp(48px, 9vh, 88px) 0 0;
+  }
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* ── BRAND ── */
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .brand-orb {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: var(--accent);
+    display: grid;
+    place-items: center;
+    color: #0a0a0f;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition:
+      background 0.4s ease,
+      box-shadow 0.4s ease,
+      transform 0.2s ease;
+    box-shadow: 0 4px 24px rgba(250, 204, 21, 0.3);
+  }
+  .brand-orb::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 19px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18),
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+  .brand-orb .material-icons-round {
+    font-size: 30px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-orb:hover,
+  .brand-orb.green {
+    background: #22c55e;
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.5);
+    transform: scale(1.07);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .accent {
+    color: var(--accent);
+  }
+  .hero-tagline {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .hero-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.8;
+    max-width: 440px;
+    padding-left: 2px;
+    border-left: 2px solid var(--border-accent);
+    padding-left: 14px;
+  }
+
+  /* ── ACTION CARDS ── */
+  .action-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .action-card.community {
+    grid-column: 1 / -1;
+  }
+
+  .action-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 26px 24px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition:
+      transform 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.22s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* shimmer layer */
+  .action-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.06),
+      transparent
+    );
+    transform: skewX(-15deg);
+    transition: left 0.55s ease;
+    pointer-events: none;
+  }
+  .action-card:hover::after {
+    left: 130%;
+  }
+
+  .action-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* PRIMARY */
+  .action-card.primary {
+    background: linear-gradient(
+      135deg,
+      #fcd53a 0%,
+      var(--accent) 60%,
+      #f5b800 100%
+    );
+    border-color: transparent;
+    color: #0a0a0f;
+    box-shadow: 0 4px 20px rgba(250, 204, 21, 0.25);
+  }
+  .action-card.primary:hover {
+    box-shadow: 0 16px 44px rgba(250, 204, 21, 0.45);
+  }
+  .action-card.primary .action-icon-wrap {
+    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .action-card.primary .action-icon-wrap .material-icons-round {
+    color: #0a0a0f;
+  }
+  .action-card.primary .action-arrow {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  /* SECONDARY */
+  .action-card.secondary {
+    background: var(--bg-card);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .action-card.secondary:hover {
+    border-color: var(--border-accent);
+    box-shadow: 0 10px 32px rgba(250, 204, 21, 0.12);
+  }
+  .action-card.secondary .action-icon-wrap {
+    background: var(--accent-glow);
+    border: 1px solid var(--border-accent);
+  }
+  .action-card.secondary .action-icon-wrap .material-icons-round {
+    color: var(--accent);
+  }
+
+  /* COMMUNITY */
+  .action-card.community {
+    background: linear-gradient(
+      135deg,
+      var(--bg-card-2) 0%,
+      rgba(56, 189, 248, 0.06) 100%
+    );
+    color: var(--text);
+    border-color: rgba(56, 189, 248, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  .action-card.community:hover {
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 10px 32px rgba(56, 189, 248, 0.12);
+  }
+  .action-card.community .action-icon-wrap {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+  .action-card.community .action-icon-wrap .material-icons-round {
+    color: var(--blue);
+  }
+  .action-card.community .action-arrow {
+    color: var(--blue);
+  }
+
+  /* shared icon wrap */
+  .action-icon-wrap {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .action-icon-wrap .material-icons-round {
+    font-size: 24px;
+  }
+
+  .action-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: relative;
+    z-index: 1;
+  }
+  .action-title {
+    font-family: var(--font-display);
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .action-arrow {
+    font-size: 22px;
+    opacity: 0.45;
+    position: relative;
+    z-index: 1;
+    transition:
+      transform 0.22s ease,
+      opacity 0.22s ease;
+  }
+  .action-card:hover .action-arrow {
+    transform: translateX(5px);
+    opacity: 1;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .shortcut-strip {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(10, 10, 15, 0.96);
+    backdrop-filter: blur(24px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 env(safe-area-inset-bottom, 10px);
+  }
+  .shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 10px;
+    min-width: 56px;
+    transition:
+      color 0.2s ease,
+      background 0.2s ease;
+  }
+  .shortcut .material-icons-round {
+    font-size: 22px;
+  }
+  .shortcut:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .shortcut.active {
+    color: var(--accent);
+  }
+  .shortcut.active .material-icons-round {
+    filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.5));
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 500px) {
+    .action-cards {
+      grid-template-columns: 1fr;
+    }
+    .action-card.community {
+      grid-column: 1;
+    }
+  }
+</style>
+
+<script>
+  const orb = document.getElementById("brandOrb");
+  orb.addEventListener("click", () => {
+    orb.classList.add("green");
+    setTimeout(() => orb.classList.remove("green"), 1800);
+  });
+
+  const obs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add("visible");
+      });
+    },
+    { threshold: 0.08 },
+  );
+  document.querySelectorAll(".fade-in").forEach((el) => obs.observe(el));
+</script>
+
+{% endblock %}

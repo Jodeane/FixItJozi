@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %} {% block content %}
+<div class="container">
+  <div class="card">
+    <h2>Track Issue</h2>
+
+    <p><strong>Category:</strong> Roads</p>
+    <p>
+      <strong>Description:</strong> Large pothole that has caused multiple
+      accidents
+    </p>
+    <p>
+      <strong>Location:</strong> 970, Heron Crescent, Rabie Ridge, Midrand, 1688
+    </p>
+    <p><strong>Reported on:</strong> 31 August 2025</p>
+    <p><strong>Photos:</strong> N/A</p>
+    <p><strong>Reference:</strong> JHB12345</p>
+
+    <hr />
+
+    <h3>Status Timeline</h3>
+
+    <ul style="list-style: none; padding-left: 0">
+      <li>✔ Logged</li>
+      <li>✔ Assigned</li>
+      <li style="color: orange">● In Progress</li>
+      <li style="color: gray">○ Resolved</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

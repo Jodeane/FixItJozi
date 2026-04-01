@@ -1,0 +1,211 @@
+{% extends 'core/base.html' %} {% block content %}
+
+<div class="container">
+  <h2>Report Issue</h2>
+
+  <div style="display: flex; gap: 30px">
+    <!-- LEFT: FORM -->
+    <div class="card" style="flex: 1">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- CATEGORY -->
+        <label>Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select Category</option>
+          <option value="electricity">Electricity</option>
+          <option value="gas">Gas</option>
+          <option value="parks">Parks</option>
+          <option value="roads">Roads</option>
+          <option value="traffic">Traffic Lights</option>
+          <option value="transport">Transport</option>
+          <option value="waste">Waste & Refuse</option>
+          <option value="water">Water & Sanitation</option>
+        </select>
+
+        <br /><br />
+
+        <!-- SUBCATEGORY -->
+        <label>Sub Category</label>
+        <select id="subcategory" name="subcategory" required>
+          <option>Select category first</option>
+        </select>
+
+        <br /><br />
+
+        <!-- DESCRIPTION -->
+        <label>Description</label>
+        <textarea
+          name="description"
+          placeholder="Describe the issue..."
+        ></textarea>
+
+        <br /><br />
+
+        <label>Priority Level</label>
+        <select name="priority" required>
+          <option value="">Select Priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+
+        <br /><br />
+
+        <!-- VOICE RECORD -->
+        <label>Or Record Voice</label><br />
+        <button type="button">Start Recording</button>
+
+        <br /><br />
+
+        <!-- PHOTO -->
+        <label>Upload Photo</label>
+        <input type="file" name="photo" />
+
+        <br /><br />
+
+        <!-- HIDDEN LOCATION -->
+        <input type="hidden" id="latitude" name="latitude" />
+        <input type="hidden" id="longitude" name="longitude" />
+
+        <button type="submit">Submit Report</button>
+      </form>
+    </div>
+
+    <!-- RIGHT: MAP -->
+    <div style="flex: 1">
+      <!-- 🔍 SEARCH -->
+      <input
+        type="text"
+        id="searchBox"
+        placeholder="Search location..."
+        style="width: 70%"
+      />
+      <button type="button" onclick="searchLocation()">Search</button>
+
+      <br /><br />
+
+      <!-- 🗺️ MAP -->
+      <div id="map" style="height: 400px; border-radius: 10px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 🔴 GLOBAL VARIABLES
+  var map;
+  var marker;
+
+  // 🟦 LOAD MAP AFTER PAGE LOAD
+  document.addEventListener("DOMContentLoaded", function () {
+    map = L.map("map").setView([-26.2041, 28.0473], 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+    }).addTo(map);
+
+    // 📍 AUTO GPS
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        let lat = position.coords.latitude;
+        let lng = position.coords.longitude;
+
+        map.setView([lat, lng], 15);
+
+        marker = L.marker([lat, lng]).addTo(map);
+
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+      });
+    }
+
+    // 📍 CLICK TO PIN
+    map.on("click", function (e) {
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker(e.latlng).addTo(map);
+
+      document.getElementById("latitude").value = e.latlng.lat;
+      document.getElementById("longitude").value = e.latlng.lng;
+    });
+  });
+
+  // 🔍 SEARCH FUNCTION (FIXED)
+  function searchLocation() {
+    let query = document.getElementById("searchBox").value;
+
+    if (!query) {
+      alert("Please enter a location");
+      return;
+    }
+
+    fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.length > 0) {
+          let lat = parseFloat(data[0].lat);
+          let lon = parseFloat(data[0].lon);
+
+          map.setView([lat, lon], 15);
+
+          if (marker) {
+            map.removeLayer(marker);
+          }
+
+          marker = L.marker([lat, lon]).addTo(map);
+
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lon;
+        } else {
+          alert("Location not found");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Search failed");
+      });
+  }
+
+  // 🟦 ENTER KEY SUPPORT
+  document
+    .getElementById("searchBox")
+    .addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchLocation();
+      }
+    });
+
+  // 🟦 SUBCATEGORY LOGIC
+  const subcategories = {
+    gas: ["Gas Leak", "Gas Shortage"],
+    electricity: ["Power Outage", "Cable Theft"],
+    roads: ["Pothole", "Road Damage"],
+    water: ["Water Leak", "No Water"],
+    waste: ["Missed Collection", "Overflowing Bins"],
+    traffic: ["Broken Lights", "Timing Issue"],
+    transport: ["Bus Delay", "Taxi Issue"],
+    parks: ["Damaged Equipment", "Unclean Area"],
+  };
+
+  document.getElementById("category").addEventListener("change", function () {
+    let category = this.value;
+    let sub = document.getElementById("subcategory");
+
+    sub.innerHTML = "";
+
+    if (subcategories[category]) {
+      subcategories[category].forEach((item) => {
+        let option = document.createElement("option");
+        option.text = item;
+        sub.add(option);
+      });
+    }
+  });
+</script>
+
+{% endblock %}

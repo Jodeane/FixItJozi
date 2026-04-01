@@ -1,0 +1,375 @@
+{% extends 'core/base.html' %} {% block content %}
+
+<section class="landing-hero">
+  <div class="lh-left">
+    <h1 class="lh-title">
+      Fix the city,<br />
+      <span class="lh-accent">one report</span><br />
+      at a time.
+    </h1>
+
+    <p class="lh-sub">
+      FixIt Jozi connects Johannesburg residents with city officials who can
+      resolve infrastructure issues fast.
+    </p>
+
+    <div class="lh-pills"></div>
+  </div>
+
+  <div class="lh-right">
+    <div class="lang-hero-card">
+      <div class="lang-hero-topbar"></div>
+
+      <div class="lang-hero-header">
+        <div class="lang-hero-icon">
+          <span class="material-icons-round">translate</span>
+        </div>
+        <div>
+          <h2 class="lang-hero-title">Select your preffered language!</h2>
+          <p class="lang-hero-sub">
+            South Africa has 11 official languages.<br />Choose yours to get
+            started.
+          </p>
+        </div>
+      </div>
+
+      <form action="/login/" method="get" class="lang-hero-form">
+        <div class="lang-select-wrap">
+          <span class="material-icons-round lang-select-icon">language</span>
+          <select name="language" required class="lang-select">
+            <option value="">Select a language…</option>
+            <option value="en">English</option>
+            <option value="zu">isiZulu</option>
+            <option value="xh">isiXhosa</option>
+            <option value="af">Afrikaans</option>
+            <option value="st">Sesotho</option>
+            <option value="nso">Sepedi</option>
+            <option value="tn">Setswana</option>
+            <option value="ts">Xitsonga</option>
+            <option value="ve">Tshivenda</option>
+            <option value="nr">isiNdebele</option>
+            <option value="ss">Siswati</option>
+          </select>
+          <span class="material-icons-round lang-select-arrow"
+            >expand_more</span
+          >
+        </div>
+
+        <button type="submit" class="lang-hero-btn">
+          <span>Continue</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </button>
+      </form>
+
+      <p class="lang-hint"></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .landing-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: calc(100vh - 70px);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(40px, 8vh, 80px) clamp(20px, 5vw, 72px);
+    align-items: center;
+  }
+
+  .lh-left {
+    padding-right: clamp(20px, 4vw, 60px);
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+
+  .lh-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    color: #facc15;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 28px;
+    letter-spacing: 0.01em;
+  }
+  .lh-badge .material-icons-round {
+    font-size: 14px;
+  }
+
+  .lh-title {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2.4rem, 4vw, 4rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    margin-bottom: 20px;
+    color: #f0f0f5;
+  }
+  .lh-accent {
+    color: #facc15;
+  }
+
+  .lh-sub {
+    color: #7a7a8c;
+    font-size: 1rem;
+    line-height: 1.75;
+    max-width: 400px;
+    margin-bottom: 36px;
+  }
+
+  .lh-stats {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px;
+    background: #111118;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 18px 24px;
+    width: fit-content;
+    gap: 0;
+  }
+  .lh-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+  }
+  .lh-stat:first-child {
+    padding-left: 0;
+  }
+  .lh-stat-num {
+    font-family: "Syne", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #facc15;
+    line-height: 1;
+  }
+  .lh-stat-label {
+    font-size: 0.72rem;
+    color: #7a7a8c;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+  .lh-stat-sep {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+  }
+
+  .lh-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .lh-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #16161f;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #7a7a8c;
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .lh-pill:hover {
+    color: #f0f0f5;
+    border-color: rgba(250, 204, 21, 0.2);
+  }
+  .lh-pill .material-icons-round {
+    font-size: 15px;
+    color: #facc15;
+  }
+
+  .lh-right {
+    animation: fadeUp 0.7s 0.25s ease both;
+  }
+
+  .lang-hero-card {
+    background: #111118;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 24px;
+    padding: clamp(28px, 4vw, 44px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .lang-hero-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .lang-hero-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: #facc15;
+  }
+  .lang-hero-icon .material-icons-round {
+    font-size: 22px;
+  }
+  .lang-hero-title {
+    font-family: "Syne", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f0f0f5;
+    margin-bottom: 5px;
+    letter-spacing: -0.02em;
+  }
+  .lang-hero-sub {
+    color: #7a7a8c;
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  .lang-hero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Dropdown */
+  .lang-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .lang-select-icon {
+    position: absolute;
+    left: 16px;
+    color: #7a7a8c;
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .lang-select-arrow {
+    position: absolute;
+    right: 16px;
+    color: #7a7a8c;
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .lang-select {
+    width: 100%;
+    padding: 15px 46px;
+    background: #16161f;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
+    color: #f0f0f5;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .lang-select:focus {
+    outline: none;
+    border-color: #facc15;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.12);
+  }
+  .lang-select option {
+    background: #1a1a25;
+  }
+
+  .lang-hero-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #facc15;
+    color: #0a0a0f;
+    border: none;
+    cursor: pointer;
+    padding: 15px 28px;
+    border-radius: 11px;
+    font-family: "Syne", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .lang-hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(250, 204, 21, 0.35);
+  }
+  .lang-hero-btn .material-icons-round {
+    font-size: 20px;
+  }
+
+  .lang-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #3a3a4a;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    justify-content: center;
+  }
+  .lang-hint .material-icons-round {
+    font-size: 14px;
+  }
+
+  @media (max-width: 960px) {
+    .landing-hero {
+      grid-template-columns: 1fr;
+      padding: 40px 24px 60px;
+    }
+    .lh-left {
+      padding-right: 0;
+      margin-bottom: 40px;
+    }
+    .lh-stats {
+      width: 100%;
+    }
+  }
+  @media (max-width: 480px) {
+    .lh-stats {
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+    .lh-stat-sep {
+      display: none;
+    }
+    .lh-stat {
+      flex: 1;
+      min-width: 80px;
+      padding: 0 10px;
+    }
+  }
+</style>
+
+{% endblock %}
