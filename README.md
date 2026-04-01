@@ -7,10 +7,11 @@ Report community issues
 Upvote important problems
 Track reported issues
 User authentication (login/register)
-Location-based reporting (if applicable)
+Location-based reporting
 
 Tech Stack
 Python (Django)
+
 HTML, CSS
 
 Jodeane Kyle Bee
