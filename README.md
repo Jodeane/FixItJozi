@@ -9,7 +9,7 @@ Track reported issues
 User authentication (login/register)
 Location-based reporting
 
-Tech Stack
+# Tech Stack
 
 Python (Django)
 
