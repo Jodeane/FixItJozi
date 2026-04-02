@@ -1,30 +1,627 @@
 {% extends 'core/base.html' %} {% block content %}
-<div class="container">
-  <div class="card">
-    <h2>Track Issue</h2>
 
-    <p><strong>Category:</strong> Roads</p>
-    <p>
-      <strong>Description:</strong> Large pothole that has caused multiple
-      accidents
+<div class="track-wrap">
+  <!-- PAGE HEADER -->
+  <div class="track-header">
+    <h1 class="track-title">Track Your Issue</h1>
+    <p class="track-sub">
+      Enter your reference number to check the status of your report.
     </p>
-    <p>
-      <strong>Location:</strong> 970, Heron Crescent, Rabie Ridge, Midrand, 1688
+  </div>
+
+  <!-- REFERENCE NUMBER LOOKUP (Claude AI improvement: utility goal) -->
+  <div class="lookup-card">
+    <div class="lookup-icon-wrap">
+      <span class="material-icons-round">search</span>
+    </div>
+    <h2 class="lookup-heading">Look Up a Report</h2>
+    <p class="lookup-hint">
+      Your reference number was sent by SMS after you submitted your report
+      (e.g. JHB12345)
     </p>
-    <p><strong>Reported on:</strong> 31 August 2025</p>
-    <p><strong>Photos:</strong> N/A</p>
-    <p><strong>Reference:</strong> JHB12345</p>
 
-    <hr />
+    <div class="lookup-form">
+      <div class="lookup-input-wrap">
+        <span class="material-icons-round lookup-input-icon">tag</span>
+        <input
+          type="text"
+          id="refInput"
+          class="lookup-input"
+          placeholder="Enter reference number…"
+          maxlength="20"
+          autocomplete="off"
+        />
+      </div>
+      <button class="lookup-btn" onclick="lookupReport()">
+        <span class="material-icons-round">search</span>
+        Track Report
+      </button>
+    </div>
 
-    <h3>Status Timeline</h3>
+    <p class="lookup-no-ref">
+      <span
+        class="material-icons-round"
+        style="font-size: 14px; vertical-align: middle"
+        >info</span
+      >
+      Don't have a reference number?
+      <a href="/report/" class="lookup-report-link">Submit a new report</a>
+    </p>
+  </div>
 
-    <ul style="list-style: none; padding-left: 0">
-      <li>✔ Logged</li>
-      <li>✔ Assigned</li>
-      <li style="color: orange">● In Progress</li>
-      <li style="color: gray">○ Resolved</li>
-    </ul>
+  <!-- RESULT PANEL (shown after lookup) -->
+  <div class="result-panel" id="resultPanel" style="display: none">
+    <!-- NOT FOUND STATE -->
+    <div class="result-not-found" id="resultNotFound" style="display: none">
+      <span class="material-icons-round result-nf-icon">search_off</span>
+      <h3>Reference not found</h3>
+      <p>
+        We couldn't find a report matching <strong id="notFoundRef"></strong>.
+        Please check the number and try again.
+      </p>
+    </div>
+
+    <!-- FOUND STATE -->
+    <div class="result-found" id="resultFound" style="display: none">
+      <div class="result-found-header">
+        <div class="result-ref-badge" id="resultRefBadge"></div>
+        <span class="result-date" id="resultDate"></span>
+      </div>
+
+      <div class="result-details">
+        <div class="result-row">
+          <span class="material-icons-round">category</span>
+          <div>
+            <span class="result-label">Category</span>
+            <span class="result-value" id="resultCategory"></span>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="material-icons-round">description</span>
+          <div>
+            <span class="result-label">Description</span>
+            <span class="result-value" id="resultDescription"></span>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="material-icons-round">location_on</span>
+          <div>
+            <span class="result-label">Location</span>
+            <span class="result-value" id="resultLocation"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS TIMELINE -->
+      <div class="timeline-section">
+        <h3 class="timeline-heading">
+          <span class="material-icons-round">timeline</span>
+          Status Timeline
+        </h3>
+        <div class="timeline" id="statusTimeline">
+          <!-- steps injected by JS -->
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<style>
+  .track-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(32px, 5vh, 56px) clamp(20px, 5vw, 40px) 80px;
+  }
+
+  /* HEADER */
+  .track-header {
+    margin-bottom: 32px;
+  }
+  .track-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .track-sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  /* LOOKUP CARD */
+  .lookup-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 40px);
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .lookup-icon-wrap {
+    width: 56px;
+    height: 56px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border-accent);
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    margin: 0 auto 18px;
+  }
+  .lookup-icon-wrap .material-icons-round {
+    font-size: 26px;
+  }
+  .lookup-heading {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .lookup-hint {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto 24px;
+  }
+
+  .lookup-form {
+    display: flex;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto 16px;
+  }
+  .lookup-input-wrap {
+    position: relative;
+    flex: 1;
+  }
+  .lookup-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 18px;
+    pointer-events: none;
+  }
+  .lookup-input {
+    width: 100%;
+    padding: 13px 14px 13px 44px;
+    background: var(--bg-card-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition:
+      border-color var(--ease),
+      box-shadow var(--ease);
+  }
+  .lookup-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .lookup-input::placeholder {
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .lookup-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent);
+    color: #111;
+    border: none;
+    cursor: pointer;
+    padding: 13px 22px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition:
+      opacity var(--ease),
+      transform var(--ease);
+    flex-shrink: 0;
+  }
+  .lookup-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(245, 197, 24, 0.3);
+  }
+  .lookup-btn .material-icons-round {
+    font-size: 17px;
+  }
+
+  .lookup-no-ref {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+  .lookup-report-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .lookup-report-link:hover {
+    text-decoration: underline;
+  }
+
+  /* RESULT PANEL */
+  .result-panel {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  /* NOT FOUND */
+  .result-not-found {
+    background: var(--bg-card);
+    border: 1px solid rgba(232, 135, 58, 0.25);
+    border-radius: var(--radius);
+    padding: 36px;
+    text-align: center;
+  }
+  .result-nf-icon {
+    font-size: 40px;
+    color: var(--orange);
+    display: block;
+    margin-bottom: 16px;
+  }
+  .result-not-found h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .result-not-found p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  /* FOUND */
+  .result-found {
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 36px);
+  }
+  .result-found-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-ref-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border-accent);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+  }
+  .result-date {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
+  /* Details rows */
+  .result-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .result-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .result-row > .material-icons-round {
+    font-size: 20px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .result-row > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .result-label {
+    font-size: 0.73rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+  .result-value {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* TIMELINE */
+  .timeline-section {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+  .timeline-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .timeline-heading .material-icons-round {
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .timeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+  }
+  .timeline-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: var(--border);
+  }
+  .timeline-step.done::after {
+    background: var(--green);
+  }
+  .timeline-step.active::after {
+    background: linear-gradient(to bottom, var(--accent), var(--border));
+  }
+
+  .timeline-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg-card-2);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .timeline-dot .material-icons-round {
+    font-size: 18px;
+    color: var(--text-dim);
+  }
+
+  .timeline-step.done .timeline-dot {
+    border-color: var(--green);
+    background: rgba(76, 175, 138, 0.12);
+  }
+  .timeline-step.done .timeline-dot .material-icons-round {
+    color: var(--green);
+  }
+  .timeline-step.active .timeline-dot {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+  .timeline-step.active .timeline-dot .material-icons-round {
+    color: var(--accent);
+  }
+
+  .timeline-info {
+    padding: 8px 0 24px;
+  }
+  .timeline-step-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+  .timeline-step.done .timeline-step-title,
+  .timeline-step.active .timeline-step-title {
+    color: var(--text);
+  }
+  .timeline-step-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Enter key hint */
+  @media (max-width: 540px) {
+    .lookup-form {
+      flex-direction: column;
+    }
+    .lookup-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  // Simulated report database — in production this would be a Django API call
+  const REPORTS_DB = {
+    JHB12345: {
+      ref: "JHB12345",
+      category: "Roads",
+      description: "Large pothole that has caused multiple accidents.",
+      location: "970, Heron Crescent, Rabie Ridge, Midrand, 1688",
+      date: "31 August 2025",
+      status: "in_progress",
+    },
+    JHB00001: {
+      ref: "JHB00001",
+      category: "Water & Sanitation",
+      description: "Burst pipe flooding the pavement near the school.",
+      location: "Midrand Main Road, Rabie Ridge",
+      date: "12 September 2025",
+      status: "assigned",
+    },
+    JHB99999: {
+      ref: "JHB99999",
+      category: "Electricity",
+      description: "Street light has been out for two weeks.",
+      location: "Freedom Drive, Rabie Ridge",
+      date: "5 October 2025",
+      status: "resolved",
+    },
+  };
+
+  const TIMELINE_STEPS = [
+    {
+      key: "logged",
+      icon: "receipt_long",
+      title: "Logged",
+      desc: "Your report has been received and assigned a reference number.",
+    },
+    {
+      key: "assigned",
+      icon: "assignment_ind",
+      title: "Assigned",
+      desc: "The report has been forwarded to the relevant city department.",
+    },
+    {
+      key: "in_progress",
+      icon: "construction",
+      title: "In Progress",
+      desc: "A team has been dispatched to address the issue.",
+    },
+    {
+      key: "resolved",
+      icon: "check_circle",
+      title: "Resolved",
+      desc: "The issue has been fixed. Thank you for reporting!",
+    },
+  ];
+
+  const STATUS_ORDER = ["logged", "assigned", "in_progress", "resolved"];
+
+  function lookupReport() {
+    const input = document.getElementById("refInput");
+    const ref = input.value.trim().toUpperCase();
+    const resultPanel = document.getElementById("resultPanel");
+    const resultFound = document.getElementById("resultFound");
+    const resultNotFound = document.getElementById("resultNotFound");
+
+    if (!ref) {
+      input.focus();
+      input.style.borderColor = "var(--orange)";
+      setTimeout(() => {
+        input.style.borderColor = "";
+      }, 1200);
+      return;
+    }
+
+    resultPanel.style.display = "block";
+    resultFound.style.display = "none";
+    resultNotFound.style.display = "none";
+
+    // Simulate a short network delay for realism
+    setTimeout(() => {
+      const report = REPORTS_DB[ref];
+
+      if (!report) {
+        document.getElementById("notFoundRef").textContent = `"${ref}"`;
+        resultNotFound.style.display = "block";
+        resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      // Populate found state
+      document.getElementById("resultRefBadge").textContent =
+        "🔍 " + report.ref;
+      document.getElementById("resultDate").textContent =
+        "Reported: " + report.date;
+      document.getElementById("resultCategory").textContent = report.category;
+      document.getElementById("resultDescription").textContent =
+        report.description;
+      document.getElementById("resultLocation").textContent = report.location;
+
+      // Build timeline
+      const timeline = document.getElementById("statusTimeline");
+      timeline.innerHTML = "";
+      const currentIndex = STATUS_ORDER.indexOf(report.status);
+
+      TIMELINE_STEPS.forEach((step, i) => {
+        const div = document.createElement("div");
+        div.className = "timeline-step";
+        if (i < currentIndex) div.classList.add("done");
+        if (i === currentIndex) div.classList.add("active");
+
+        const iconName =
+          i <= currentIndex
+            ? i < currentIndex
+              ? "check"
+              : step.icon
+            : step.icon;
+
+        div.innerHTML = `
+          <div class="timeline-dot">
+            <span class="material-icons-round">${iconName}</span>
+          </div>
+          <div class="timeline-info">
+            <div class="timeline-step-title">${step.title}</div>
+            <div class="timeline-step-desc">${i <= currentIndex ? step.desc : ""}</div>
+          </div>
+        `;
+        timeline.appendChild(div);
+      });
+
+      resultFound.style.display = "block";
+      resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 350);
+  }
+
+  // Enter key support
+  document
+    .getElementById("refInput")
+    .addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        lookupReport();
+      }
+    });
+
+  // Auto-uppercase as user types
+  document.getElementById("refInput").addEventListener("input", function () {
+    const pos = this.selectionStart;
+    this.value = this.value.toUpperCase();
+    this.setSelectionRange(pos, pos);
+  });
+</script>
+
 {% endblock %}
